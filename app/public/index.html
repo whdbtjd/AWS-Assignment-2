@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACME Store</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #16213e;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: 1px; }
+    header span { font-size: 0.8rem; color: #a0aec0; margin-left: auto; }
+
+    main {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    #status-bar {
+      background: #fff;
+      border-left: 4px solid #3182ce;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: #4a5568;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+
+    .card-icon { font-size: 2.2rem; }
+    .card-name  { font-size: 1rem; font-weight: 600; line-height: 1.3; }
+    .card-price { font-size: 1.25rem; font-weight: 700; color: #2b6cb0; }
+
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .qty-row label { font-size: 0.8rem; color: #718096; }
+    .qty-row input {
+      width: 56px;
+      padding: 0.3rem 0.5rem;
+      border: 1px solid #cbd5e0;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .btn-buy {
+      margin-top: auto;
+      padding: 0.6rem 1rem;
+      background: #2b6cb0;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-buy:hover   { background: #2c5282; }
+    .btn-buy:active  { background: #1a365d; }
+    .btn-buy:disabled { background: #a0aec0; cursor: not-allowed; }
+
+    /* toast notification */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      padding: 0.8rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      max-width: 320px;
+      z-index: 999;
+    }
+    #toast.show   { opacity: 1; transform: translateY(0); }
+    #toast.success { background: #276749; }
+    #toast.error   { background: #9b2c2c; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🛒 ACME Store</h1>
+  <span>Traffic test harness · <span id="api-status">connecting…</span></span>
+</header>
+
+<main>
+  <div id="status-bar">Loading products…</div>
+  <div class="products-grid" id="products"></div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  const ICONS = { 'prod-001': '⌨️', 'prod-002': '🖱️', 'prod-003': '🔌', 'prod-004': '🖥️' };
+
+  const $grid      = document.getElementById('products');
+  const $statusBar = document.getElementById('status-bar');
+  const $apiStatus = document.getElementById('api-status');
+  const $toast     = document.getElementById('toast');
+
+  // ── Toast helper ──────────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg, type = 'success') {
+    clearTimeout(toastTimer);
+    $toast.textContent = msg;
+    $toast.className   = `show ${type}`;
+    toastTimer = setTimeout(() => { $toast.className = ''; }, 3500);
+  }
+
+  function setStatus(msg, color = '#3182ce') {
+    $statusBar.textContent  = msg;
+    $statusBar.style.borderLeftColor = color;
+  }
+
+  // ── Load products ─────────────────────────────────────────────────────────
+  async function loadProducts() {
+    try {
+      const res      = await fetch('/api/products');
+      const products = await res.json();
+      $apiStatus.textContent = '✅ connected';
+      renderProducts(products);
+      setStatus(`${products.length} products loaded.`);
+    } catch (err) {
+      $apiStatus.textContent = '❌ offline';
+      setStatus('Failed to load products. Is the server running?', '#e53e3e');
+    }
+  }
+
+  function renderProducts(products) {
+    $grid.innerHTML = products.map(p => `
+      <div class="card">
+        <div class="card-icon">${ICONS[p.id] || '📦'}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-price">$${p.price.toFixed(2)}</div>
+        <div class="qty-row">
+          <label for="qty-${p.id}">Qty</label>
+          <input id="qty-${p.id}" type="number" value="1" min="1" max="99" />
+        </div>
+        <button class="btn-buy" data-id="${p.id}" data-name="${p.name}">Buy Now</button>
+      </div>
+    `).join('');
+
+    $grid.querySelectorAll('.btn-buy').forEach(btn => {
+      btn.addEventListener('click', () => handleBuy(btn));
+    });
+  }
+
+  // ── Place order ───────────────────────────────────────────────────────────
+  async function handleBuy(btn) {
+    const productId = btn.dataset.id;
+    const name      = btn.dataset.name;
+    const qty       = parseInt(document.getElementById(`qty-${productId}`).value, 10) || 1;
+
+    btn.disabled    = true;
+    btn.textContent = 'Processing…';
+    setStatus(`Placing order for "${name}" × ${qty}…`);
+
+    try {
+      const res  = await fetch('/api/orders', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ productId, quantity: qty }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        showToast(`✅ Order placed! ID: ${data.orderId.slice(0, 8)}… · Total: $${data.total}`, 'success');
+        setStatus(`Last order: ${data.orderId.slice(0, 8)}… · $${data.total}`, '#276749');
+      } else {
+        showToast(`❌ ${data.message}`, 'error');
+        setStatus(data.message, '#e53e3e');
+      }
+    } catch (err) {
+      showToast('❌ Network error. Check console.', 'error');
+      setStatus('Network error.', '#e53e3e');
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = 'Buy Now';
+    }
+  }
+
+  loadProducts();
+</script>
+</body>
+</html>
