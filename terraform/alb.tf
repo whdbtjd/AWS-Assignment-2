@@ -33,6 +33,17 @@ resource "aws_lb_target_group" "web" {
   tags = merge(local.common_tags, { Name = "${local.name_prefix}-web-tg" })
 }
 
+# ── Target Group Attachment (고정 EC2) ────────────────────────────────────────
+#
+# ASG로 전환 시 이 블록을 제거하세요. ASG가 자동으로 등록/해제를 처리합니다.
+
+resource "aws_lb_target_group_attachment" "web" {
+  count            = var.web_server_count
+  target_group_arn = aws_lb_target_group.web.arn
+  target_id        = aws_instance.web[count.index].id
+  port             = var.app_port
+}
+
 # ── Listener ──────────────────────────────────────────────────────────────────
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn

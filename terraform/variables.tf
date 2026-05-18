@@ -89,7 +89,7 @@ variable "app_port" {
 variable "app_git_repo" {
   description = "앱 소스 Git 저장소 URL (비워두면 인라인 코드 사용)"
   type        = string
-  default     = ""
+  default     = "https://github.com/whdbtjd/AWS-Assignment-2.git"
 }
 
 variable "app_subdir" {
