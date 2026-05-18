@@ -1,11 +1,16 @@
-# .gitignore
+# Node.js
+app/node_modules/
+app/orders.json
+
+# Env
+.env
+*.env
+
+# Terraform
 .terraform/
+.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
+*.tfvars
 crash.log
-crash.*.log
 override.tf
-override.tf.json
-_override.tfs
-_override.tf.json
-.terraform.lock.hcl
