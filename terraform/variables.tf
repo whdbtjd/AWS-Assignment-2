@@ -187,6 +187,13 @@ variable "acm_certificate_arn" {
   default     = ""
 }
 
+# ── 알림 ──────────────────────────────────────────────────────────────────────
+variable "alert_email" {
+  description = "WAF 공격 탐지 알림 수신 이메일"
+  type        = string
+  default     = "cys990617@gmail.com"
+}
+
 # ── 태그 ──────────────────────────────────────────────────────────────────────
 variable "tags" {
   description = "모든 리소스에 공통 적용할 태그"
