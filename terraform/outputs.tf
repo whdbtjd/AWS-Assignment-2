@@ -23,6 +23,11 @@ output "alb_dns_name" {
   value       = aws_lb.this.dns_name
 }
 
+output "cloudfront_domain" {
+  description = "CloudFront 배포 도메인 (실제 접속 URL)"
+  value       = "https://${aws_cloudfront_distribution.this.domain_name}"
+}
+
 output "launch_template_id" {
   description = "Launch Template ID"
   value       = aws_launch_template.web.id
