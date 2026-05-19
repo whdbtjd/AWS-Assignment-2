@@ -35,16 +35,52 @@ resource "aws_lb_target_group" "web" {
 
 # ── Target Group Attachment: ASG가 자동으로 등록/해제를 처리합니다 ────────────
 
-# ── Listener ──────────────────────────────────────────────────────────────────
+# ── HTTP Listener ─────────────────────────────────────────────────────────────
+# ACM 인증서가 있으면 HTTPS로 리다이렉트, 없으면 직접 포워드
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
+    type = var.acm_certificate_arn != "" ? "redirect" : "forward"
+
+    dynamic "redirect" {
+      for_each = var.acm_certificate_arn != "" ? [1] : []
+      content {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
+
+    dynamic "forward" {
+      for_each = var.acm_certificate_arn != "" ? [] : [1]
+      content {
+        target_group {
+          arn = aws_lb_target_group.web.arn
+        }
+      }
+    }
+  }
+
+  tags = merge(local.common_tags, { Name = "${local.name_prefix}-http-listener" })
+}
+
+# ── HTTPS Listener (ACM 인증서 ARN이 설정된 경우에만 생성) ────────────────────
+resource "aws_lb_listener" "https" {
+  count = var.acm_certificate_arn != "" ? 1 : 0
+
+  load_balancer_arn = aws_lb.this.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = var.acm_certificate_arn
+
+  default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.web.arn
   }
 
-  tags = merge(local.common_tags, { Name = "${local.name_prefix}-http-listener" })
+  tags = merge(local.common_tags, { Name = "${local.name_prefix}-https-listener" })
 }

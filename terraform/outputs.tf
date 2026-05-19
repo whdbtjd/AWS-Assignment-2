@@ -58,7 +58,7 @@ output "web_security_group_id" {
   value       = aws_security_group.web.id
 }
 
-output "db_security_group_id" {
-  description = "DB 서버 보안 그룹 ID"
-  value       = aws_security_group.db.id
+output "aurora_security_group_id" {
+  description = "Aurora 보안 그룹 ID"
+  value       = aws_security_group.aurora.id
 }

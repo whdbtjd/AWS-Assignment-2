@@ -49,9 +49,15 @@ variable "public_subnet_cidr_b" {
 }
 
 variable "private_subnet_cidr" {
-  description = "Private Subnet CIDR (웹 서버 ASG)"
+  description = "Private Subnet A CIDR (웹 서버 ASG AZ-A)"
   type        = string
   default     = "10.0.2.0/24"
+}
+
+variable "private_subnet_cidr_b" {
+  description = "Private Subnet B CIDR (웹 서버 ASG AZ-B)"
+  type        = string
+  default     = "10.0.5.0/24"
 }
 
 variable "db_subnet_cidr_b" {
@@ -166,6 +172,13 @@ variable "aurora_master_password" {
   type        = string
   sensitive   = true
   default     = "AcmePassword123!"
+}
+
+# ── ACM ───────────────────────────────────────────────────────────────────────
+variable "acm_certificate_arn" {
+  description = "HTTPS 리스너용 ACM 인증서 ARN (비워두면 HTTP만 사용)"
+  type        = string
+  default     = ""
 }
 
 # ── 태그 ──────────────────────────────────────────────────────────────────────

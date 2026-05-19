@@ -10,7 +10,7 @@ resource "aws_db_subnet_group" "aurora" {
 resource "aws_rds_cluster" "aurora" {
   cluster_identifier      = "${local.name_prefix}-aurora"
   engine                  = "aurora-mysql"
-  engine_version          = "8.0.mysql_aurora.3.05.2"
+  engine_version          = "8.0.mysql_aurora.3.12.0"
   database_name           = var.aurora_db_name
   master_username         = var.aurora_master_username
   master_password         = var.aurora_master_password

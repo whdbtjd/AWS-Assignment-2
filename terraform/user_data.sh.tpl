@@ -2,10 +2,6 @@
 set -euo pipefail
 exec > /var/log/user-data.log 2>&1
 
-# ── 앱 배포 자격증명 ──────────────────────────────────────────────────────────
-AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
-AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-
 # ── 1. 시스템 업데이트 ────────────────────────────────────────────────────────
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
@@ -123,7 +119,12 @@ cd "$APP_DIR"
 npm install --omit=dev
 
 # ── 6. PM2로 앱 시작 & 재부팅 시 자동 실행 ───────────────────────────────────
-PORT=${app_port} pm2 start server.js --name acme-store
+PORT=${app_port} \
+  DB_HOST=${db_host} \
+  DB_USER=${db_user} \
+  DB_PASSWORD=${db_password} \
+  DB_NAME=${db_name} \
+  pm2 start server.js --name acme-store
 pm2 startup systemd -u root --hp /root
 pm2 save
 

@@ -15,20 +15,22 @@ resource "aws_security_group" "web" {
   tags = merge(local.common_tags, { Name = "${local.name_prefix}-web-sg" })
 }
 
-resource "aws_security_group" "db" {
-  name        = "${local.name_prefix}-db-sg"
-  description = "[Anti-pattern] DB server: all ports open"
-  vpc_id      = aws_vpc.this.id
-
-  tags = merge(local.common_tags, { Name = "${local.name_prefix}-db-sg" })
-}
-
 # ── ALB 룰 ────────────────────────────────────────────────────────────────────
 resource "aws_security_group_rule" "alb_ingress_http" {
   type              = "ingress"
   description       = "HTTP from internet"
   from_port         = 80
   to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.alb.id
+}
+
+resource "aws_security_group_rule" "alb_ingress_https" {
+  type              = "ingress"
+  description       = "HTTPS from internet"
+  from_port         = 443
+  to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.alb.id
