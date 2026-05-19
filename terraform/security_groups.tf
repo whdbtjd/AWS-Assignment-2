@@ -1,7 +1,7 @@
 # ── ALB 보안 그룹 ─────────────────────────────────────────────────────────────
 resource "aws_security_group" "alb" {
   name        = "${local.name_prefix}-alb-sg"
-  description = "[안티 아키텍처] ALB: 모든 포트 전체 개방"
+  description = "[Anti-pattern] ALB: all ports open"
   vpc_id      = aws_vpc.this.id
 
   ingress {
@@ -25,7 +25,7 @@ resource "aws_security_group" "alb" {
 # ── DB Server 보안 그룹 ───────────────────────────────────────────────────────
 resource "aws_security_group" "db" {
   name        = "${local.name_prefix}-db-sg"
-  description = "[안티 아키텍처] DB server: 모든 포트 전체 개방"
+  description = "[Anti-pattern] DB server: all ports open"
   vpc_id      = aws_vpc.this.id
 
   ingress {
@@ -49,7 +49,7 @@ resource "aws_security_group" "db" {
 # ── Web Server 보안 그룹 ──────────────────────────────────────────────────────
 resource "aws_security_group" "web" {
   name        = "${local.name_prefix}-web-sg"
-  description = "[안티 아키텍처] Web servers: 모든 포트 전체 개방"
+  description = "[Anti-pattern] Web servers: all ports open"
   vpc_id      = aws_vpc.this.id
 
   ingress {
