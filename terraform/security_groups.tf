@@ -65,23 +65,41 @@ resource "aws_security_group_rule" "web_egress_https" {
   security_group_id = aws_security_group.web.id
 }
 
-resource "aws_security_group_rule" "web_egress_db" {
+resource "aws_security_group_rule" "web_egress_http" {
+  type              = "egress"
+  description       = "HTTP for apt-get"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.web.id
+}
+
+resource "aws_security_group_rule" "web_egress_aurora" {
   type                     = "egress"
-  description              = "All traffic to DB"
-  from_port                = 0
-  to_port                  = 0
-  protocol                 = "-1"
-  source_security_group_id = aws_security_group.db.id
+  description              = "MySQL to Aurora"
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.aurora.id
   security_group_id        = aws_security_group.web.id
 }
 
-# ── DB Server 룰 ──────────────────────────────────────────────────────────────
-resource "aws_security_group_rule" "db_ingress_web" {
+# ── Aurora 보안 그룹 ───────────────────────────────────────────────────────────
+resource "aws_security_group" "aurora" {
+  name        = "${local.name_prefix}-aurora-sg"
+  description = "Aurora: MySQL from web servers only"
+  vpc_id      = aws_vpc.this.id
+
+  tags = merge(local.common_tags, { Name = "${local.name_prefix}-aurora-sg" })
+}
+
+resource "aws_security_group_rule" "aurora_ingress_web" {
   type                     = "ingress"
-  description              = "From web servers only"
-  from_port                = 0
-  to_port                  = 0
-  protocol                 = "-1"
+  description              = "MySQL from web servers"
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
   source_security_group_id = aws_security_group.web.id
-  security_group_id        = aws_security_group.db.id
+  security_group_id        = aws_security_group.aurora.id
 }

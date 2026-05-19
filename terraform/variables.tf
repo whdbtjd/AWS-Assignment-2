@@ -49,9 +49,15 @@ variable "public_subnet_cidr_b" {
 }
 
 variable "private_subnet_cidr" {
-  description = "Private Subnet CIDR (DB 예약)"
+  description = "Private Subnet CIDR (웹 서버 ASG)"
   type        = string
   default     = "10.0.2.0/24"
+}
+
+variable "db_subnet_cidr_b" {
+  description = "DB Private Subnet CIDR (AZ-B, Aurora용)"
+  type        = string
+  default     = "10.0.4.0/24"
 }
 
 # ── EC2 ───────────────────────────────────────────────────────────────────────
@@ -134,6 +140,32 @@ variable "health_check_path" {
   description = "ALB 헬스 체크 경로"
   type        = string
   default     = "/"
+}
+
+# ── Aurora ───────────────────────────────────────────────────────────────────
+variable "aurora_instance_class" {
+  description = "Aurora 인스턴스 클래스 (최소: db.t3.medium)"
+  type        = string
+  default     = "db.t3.medium"
+}
+
+variable "aurora_db_name" {
+  description = "Aurora 데이터베이스 이름"
+  type        = string
+  default     = "acmedb"
+}
+
+variable "aurora_master_username" {
+  description = "Aurora 마스터 사용자명"
+  type        = string
+  default     = "acmeadmin"
+}
+
+variable "aurora_master_password" {
+  description = "Aurora 마스터 패스워드 (민감 정보 — tfvars로 관리 권장)"
+  type        = string
+  sensitive   = true
+  default     = "AcmePassword123!"
 }
 
 # ── 태그 ──────────────────────────────────────────────────────────────────────
