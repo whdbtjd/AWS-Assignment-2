@@ -174,9 +174,15 @@ variable "aurora_master_password" {
   default     = "AcmePassword123!"
 }
 
-# ── ACM ───────────────────────────────────────────────────────────────────────
+# ── 도메인 / ACM ──────────────────────────────────────────────────────────────
+variable "domain_name" {
+  description = "Route53에 등록된 도메인 이름"
+  type        = string
+  default     = "ussung.com"
+}
+
 variable "acm_certificate_arn" {
-  description = "HTTPS 리스너용 ACM 인증서 ARN (비워두면 HTTP만 사용)"
+  description = "ALB HTTPS 리스너용 ACM 인증서 ARN (acm.tf에서 자동 설정됨)"
   type        = string
   default     = ""
 }

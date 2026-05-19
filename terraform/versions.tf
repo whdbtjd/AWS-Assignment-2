@@ -20,3 +20,17 @@ provider "aws" {
     }
   }
 }
+
+# CloudFront ACM 인증서는 반드시 us-east-1 이어야 함
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+
+  default_tags {
+    tags = {
+      Project     = "acme"
+      ManagedBy   = "Terraform"
+      Repository  = "ACME/Assignment_2"
+    }
+  }
+}

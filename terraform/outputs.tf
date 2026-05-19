@@ -24,8 +24,13 @@ output "alb_dns_name" {
 }
 
 output "cloudfront_domain" {
-  description = "CloudFront 배포 도메인 (실제 접속 URL)"
+  description = "CloudFront 배포 도메인"
   value       = "https://${aws_cloudfront_distribution.this.domain_name}"
+}
+
+output "site_url" {
+  description = "실제 접속 URL (커스텀 도메인)"
+  value       = "https://${var.domain_name}"
 }
 
 output "launch_template_id" {
