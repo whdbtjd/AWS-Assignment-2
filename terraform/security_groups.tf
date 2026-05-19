@@ -1,7 +1,7 @@
 # ── 보안 그룹 (룰 없이 먼저 생성) ────────────────────────────────────────────
 resource "aws_security_group" "alb" {
   name        = "${local.name_prefix}-alb-sg"
-  description = "ALB: HTTP inbound only"
+  description = "[Anti-pattern] ALB: all ports open"
   vpc_id      = aws_vpc.this.id
 
   tags = merge(local.common_tags, { Name = "${local.name_prefix}-alb-sg" })
@@ -9,7 +9,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_security_group" "web" {
   name        = "${local.name_prefix}-web-sg"
-  description = "Web servers: app port from ALB only"
+  description = "[Anti-pattern] Web servers: all ports open"
   vpc_id      = aws_vpc.this.id
 
   tags = merge(local.common_tags, { Name = "${local.name_prefix}-web-sg" })
@@ -17,7 +17,7 @@ resource "aws_security_group" "web" {
 
 resource "aws_security_group" "db" {
   name        = "${local.name_prefix}-db-sg"
-  description = "DB server: inbound from web servers only"
+  description = "[Anti-pattern] DB server: all ports open"
   vpc_id      = aws_vpc.this.id
 
   tags = merge(local.common_tags, { Name = "${local.name_prefix}-db-sg" })
