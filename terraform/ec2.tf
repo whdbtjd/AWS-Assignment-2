@@ -99,7 +99,7 @@ resource "aws_instance" "web" {
     volume_type           = "gp3"
     volume_size           = 20
     delete_on_termination = true
-    encrypted             = true
+    encrypted             = false
   }
 
   tags = merge(local.common_tags, {
@@ -128,7 +128,7 @@ resource "aws_instance" "db" {
     volume_type           = "gp3"
     volume_size           = 20
     delete_on_termination = true
-    encrypted             = true
+    encrypted             = false
   }
 
   tags = merge(local.common_tags, {

@@ -2,6 +2,10 @@
 set -euo pipefail
 exec > /var/log/user-data.log 2>&1
 
+# ── 앱 배포 자격증명 ──────────────────────────────────────────────────────────
+AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
+AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+
 # ── 1. 시스템 업데이트 ────────────────────────────────────────────────────────
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
