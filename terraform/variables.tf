@@ -189,9 +189,16 @@ variable "acm_certificate_arn" {
 
 # ── 알림 ──────────────────────────────────────────────────────────────────────
 variable "alert_email" {
-  description = "WAF 공격 탐지 알림 수신 이메일"
+  description = "WAF / 자격 증명 IR 알림 수신 이메일"
   type        = string
   default     = "cys990617@gmail.com"
+}
+
+# ── 시나리오 3: 비정상 GetSecretValue 탐지 ────────────────────────────────────
+variable "credential_getsecret_threshold" {
+  description = "5분 내 GetSecretValue 허용 횟수 (초과 시 IR 로테이션)"
+  type        = number
+  default     = 2
 }
 
 # ── 태그 ──────────────────────────────────────────────────────────────────────

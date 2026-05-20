@@ -44,10 +44,6 @@ resource "aws_launch_template" "web" {
     app_port     = var.app_port
     app_git_repo = var.app_git_repo
     app_subdir   = var.app_subdir
-    db_host      = aws_rds_cluster.aurora.endpoint
-    db_user      = var.aurora_master_username
-    db_password  = var.aurora_master_password
-    db_name      = var.aurora_db_name
   }))
 
   block_device_mappings {

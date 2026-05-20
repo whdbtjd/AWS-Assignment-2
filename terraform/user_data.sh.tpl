@@ -119,12 +119,7 @@ cd "$APP_DIR"
 npm install --omit=dev
 
 # ── 6. PM2로 앱 시작 & 재부팅 시 자동 실행 ───────────────────────────────────
-PORT=${app_port} \
-  DB_HOST=${db_host} \
-  DB_USER=${db_user} \
-  DB_PASSWORD=${db_password} \
-  DB_NAME=${db_name} \
-  pm2 start server.js --name acme-store
+PORT=${app_port} pm2 start server.js --name acme-store
 pm2 startup systemd -u root --hp /root
 pm2 save
 

@@ -63,6 +63,21 @@ output "aurora_slowquery_log_group" {
   value       = "/aws/rds/cluster/${aws_rds_cluster.aurora.cluster_identifier}/slowquery"
 }
 
+output "aurora_master_secret_arn" {
+  description = "Aurora 마스터 자격 증명 Secrets Manager ARN (시나리오 3)"
+  value       = local.aurora_master_secret_arn
+}
+
+output "credential_ir_sns_topic_arn" {
+  description = "자격 증명 IR 알림 SNS Topic ARN"
+  value       = aws_sns_topic.credential_ir.arn
+}
+
+output "cloudtrail_log_group" {
+  description = "CloudTrail CloudWatch Logs 그룹 (GetSecretValue 메트릭)"
+  value       = aws_cloudwatch_log_group.cloudtrail.name
+}
+
 output "nat_gateway_ip" {
   description = "NAT Gateway 퍼블릭 IP"
   value       = aws_eip.nat.public_ip
