@@ -21,6 +21,9 @@ resource "aws_rds_cluster" "aurora" {
   backup_retention_period = 1
   deletion_protection     = false
 
+  # db.t3.* 는 Performance Insights 미지원 → Standard Database Insights 사용 (7일, 과제용 무료)
+  database_insights_mode = "standard"
+
   tags = merge(local.common_tags, { Name = "${local.name_prefix}-aurora" })
 }
 
