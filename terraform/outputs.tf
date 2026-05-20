@@ -117,3 +117,28 @@ output "aurora_security_group_id" {
   description = "Aurora 보안 그룹 ID"
   value       = aws_security_group.aurora.id
 }
+
+output "guardduty_detector_id" {
+  description = "GuardDuty detector ID (existing detector in this region)"
+  value       = data.aws_guardduty_detector.this.id
+}
+
+output "guardduty_isolation_lambda" {
+  description = "GuardDuty 자동 격리 Lambda"
+  value       = aws_lambda_function.guardduty_isolate.function_name
+}
+
+output "quarantine_security_group_id" {
+  description = "격리용 보안 그룹 ID"
+  value       = aws_security_group.quarantine.id
+}
+
+output "guardduty_isolation_sns_topic_arn" {
+  description = "GuardDuty 격리 알림 SNS Topic ARN"
+  value       = aws_sns_topic.guardduty_isolation.arn
+}
+
+output "guardduty_isolation_event_rule" {
+  description = "GuardDuty → Lambda EventBridge 규칙 이름"
+  value       = aws_cloudwatch_event_rule.guardduty_isolation.name
+}

@@ -214,6 +214,25 @@ variable "credential_getsecret_threshold" {
   default     = 2
 }
 
+# ── GuardDuty 격리 실습 ───────────────────────────────────────────────────────
+variable "guardduty_isolation_min_severity" {
+  description = "자동 격리 GuardDuty finding 최소 severity (0~8.9, Medium≈4)"
+  type        = number
+  default     = 4.0
+}
+
+variable "guardduty_isolation_finding_types" {
+  description = "격리 대상 finding type 목록 (비우면 Instance + severity만 필터)"
+  type        = list(string)
+  default     = []
+}
+
+variable "guardduty_isolation_limit_to_asg" {
+  description = "true면 acme-prod-web-asg 인스턴스만 격리"
+  type        = bool
+  default     = true
+}
+
 # ── 태그 ──────────────────────────────────────────────────────────────────────
 variable "tags" {
   description = "모든 리소스에 공통 적용할 태그"
