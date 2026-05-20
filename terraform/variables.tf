@@ -114,7 +114,7 @@ variable "app_subdir" {
 variable "asg_min_size" {
   description = "ASG 최소 인스턴스 수"
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "asg_max_size" {
