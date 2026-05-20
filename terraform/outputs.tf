@@ -88,6 +88,21 @@ output "waf_ip_block_lambda" {
   value       = aws_lambda_function.waf_ip_block.function_name
 }
 
+output "config_bucket" {
+  description = "AWS Config 스냅샷 S3 버킷"
+  value       = aws_s3_bucket.config.bucket
+}
+
+output "config_rule_name" {
+  description = "Config 관리형 규칙 (INCOMING_SSH_DISABLED / restricted-ssh)"
+  value       = aws_config_config_rule.incoming_ssh_denied.name
+}
+
+output "config_ssh_remediate_lambda" {
+  description = "Config SSH 자동 수정 Lambda (22/0.0.0.0.0만 제거)"
+  value       = aws_lambda_function.config_ssh_remediate.function_name
+}
+
 output "nat_gateway_ip" {
   description = "NAT Gateway 퍼블릭 IP"
   value       = aws_eip.nat.public_ip
