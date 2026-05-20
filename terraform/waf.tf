@@ -31,10 +31,39 @@ resource "aws_wafv2_web_acl" "this" {
     }
   }
 
-  # ── Rule 1: Core Rule Set (XSS 포함) ────────────────────────────────────────
+  # ── Rule 1: 한국 외 국가 차단 (Geo) ───────────────────────────────────────────
+  dynamic "rule" {
+    for_each = var.waf_geo_block_enabled ? [1] : []
+    content {
+      name     = "BlockNonAllowedCountries"
+      priority = 1
+
+      action {
+        block {}
+      }
+
+      statement {
+        not_statement {
+          statement {
+            geo_match_statement {
+              country_codes = var.waf_allowed_country_codes
+            }
+          }
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "${local.name_prefix}-geo-block"
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
+  # ── Rule 2: Core Rule Set (XSS 포함) ────────────────────────────────────────
   rule {
     name     = "AWSManagedRulesCommonRuleSet"
-    priority = 1
+    priority = 2
 
     override_action {
       none {}
@@ -54,10 +83,10 @@ resource "aws_wafv2_web_acl" "this" {
     }
   }
 
-  # ── Rule 2: SQL Injection Rule Set ──────────────────────────────────────────
+  # ── Rule 3: SQL Injection Rule Set ──────────────────────────────────────────
   rule {
     name     = "AWSManagedRulesSQLiRuleSet"
-    priority = 2
+    priority = 3
 
     override_action {
       none {}

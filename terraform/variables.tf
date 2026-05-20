@@ -187,6 +187,19 @@ variable "acm_certificate_arn" {
   default     = ""
 }
 
+# ── WAF Geo ───────────────────────────────────────────────────────────────────
+variable "waf_geo_block_enabled" {
+  description = "허용 국가 외 트래픽 WAF BLOCK (CloudFront)"
+  type        = bool
+  default     = true
+}
+
+variable "waf_allowed_country_codes" {
+  description = "허용 국가 ISO 3166-1 alpha-2 코드 (이 외 국가 BLOCK)"
+  type        = list(string)
+  default     = ["KR"]
+}
+
 # ── 알림 ──────────────────────────────────────────────────────────────────────
 variable "alert_email" {
   description = "WAF / 자격 증명 IR 알림 수신 이메일"
