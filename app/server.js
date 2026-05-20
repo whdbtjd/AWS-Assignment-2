@@ -112,8 +112,25 @@ app.use((_req, res) => {
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 
-app.listen(PORT, () => {
-  log('INFO', 'server_start', { port: PORT, env: process.env.NODE_ENV || 'development' });
+async function main() {
+  await db.init();
+  log('INFO', 'db_ready', {
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+  });
+
+  app.listen(PORT, () => {
+    log('INFO', 'server_start', {
+      port: PORT,
+      env: process.env.NODE_ENV || 'development',
+      db: 'aurora-mysql',
+    });
+  });
+}
+
+main().catch((err) => {
+  log('ERROR', 'startup_failed', { error: err.message, stack: err.stack });
+  process.exit(1);
 });
 
 module.exports = app;

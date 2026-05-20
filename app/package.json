@@ -12,7 +12,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.812.0",
     "express": "^5.2.1",
+    "mysql2": "^3.14.1",
     "uuid": "^14.0.0"
   }
 }

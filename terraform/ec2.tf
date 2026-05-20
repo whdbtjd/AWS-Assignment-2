@@ -19,6 +19,23 @@ resource "aws_iam_role_policy_attachment" "ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+resource "aws_iam_role_policy" "ec2_aurora_secret" {
+  name = "${local.name_prefix}-ec2-aurora-secret-read"
+  role = aws_iam_role.ec2_ssm.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = ["secretsmanager:GetSecretValue"]
+      Resource = coalesce(
+        try(aws_rds_cluster.aurora.master_user_secret[0].secret_arn, null),
+        "arn:aws:secretsmanager:${var.aws_region}:*:secret:rds!cluster-*",
+      )
+    }]
+  })
+}
+
 resource "aws_iam_instance_profile" "ec2_ssm" {
   name = "${local.name_prefix}-ec2-ssm-profile"
   role = aws_iam_role.ec2_ssm.name
@@ -41,9 +58,14 @@ resource "aws_launch_template" "web" {
   }
 
   user_data = base64encode(templatefile("${path.module}/user_data.sh.tpl", {
-    app_port     = var.app_port
-    app_git_repo = var.app_git_repo
-    app_subdir   = var.app_subdir
+    app_port       = var.app_port
+    app_git_repo   = var.app_git_repo
+    app_subdir     = var.app_subdir
+    db_host        = aws_rds_cluster.aurora.endpoint
+    db_name        = aws_rds_cluster.aurora.database_name
+    db_user        = var.aurora_master_username
+    db_secret_arn  = try(aws_rds_cluster.aurora.master_user_secret[0].secret_arn, "")
+    aws_region     = var.aws_region
   }))
 
   block_device_mappings {

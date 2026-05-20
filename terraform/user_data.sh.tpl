@@ -31,7 +31,9 @@ cat > "$APP_DIR/package.json" << 'PKGJSON'
   "main": "server.js",
   "scripts": { "start": "node server.js" },
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.812.0",
     "express": "^4.18.2",
+    "mysql2": "^3.14.1",
     "uuid": "^9.0.0"
   }
 }
@@ -115,12 +117,21 @@ INDEXHTML
 cd "$APP_DIR"
 %{ endif ~}
 
-# ── 5. 의존성 설치 ────────────────────────────────────────────────────────────
+# ── 5. Aurora 연결 환경 변수 ─────────────────────────────────────────────────
+export DB_HOST="${db_host}"
+export DB_NAME="${db_name}"
+export DB_USER="${db_user}"
+export DB_SECRET_ARN="${db_secret_arn}"
+export AWS_REGION="${aws_region}"
+export PORT="${app_port}"
+
+# ── 6. 의존성 설치 ────────────────────────────────────────────────────────────
 npm install --omit=dev
 
-# ── 6. PM2로 앱 시작 & 재부팅 시 자동 실행 ───────────────────────────────────
-PORT=${app_port} pm2 start server.js --name acme-store
+# ── 7. PM2로 앱 시작 & 재부팅 시 자동 실행 ───────────────────────────────────
+pm2 delete acme-store 2>/dev/null || true
+pm2 start server.js --name acme-store --update-env
 pm2 startup systemd -u root --hp /root
 pm2 save
 
-echo "Deployment complete — port ${app_port}"
+echo "Deployment complete — port ${app_port} (Aurora ${db_host})"
