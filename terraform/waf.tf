@@ -9,6 +9,28 @@ resource "aws_wafv2_web_acl" "this" {
     allow {}
   }
 
+  # ── Rule 0: Lambda/EventBridge가 추가한 공격 IP 차단 ─────────────────────────
+  rule {
+    name     = "BlockedIpSet"
+    priority = 0
+
+    action {
+      block {}
+    }
+
+    statement {
+      ip_set_reference_statement {
+        arn = aws_wafv2_ip_set.blocked.arn
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "${local.name_prefix}-blocked-ip-set"
+      sampled_requests_enabled   = true
+    }
+  }
+
   # ── Rule 1: Core Rule Set (XSS 포함) ────────────────────────────────────────
   rule {
     name     = "AWSManagedRulesCommonRuleSet"

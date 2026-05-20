@@ -78,6 +78,16 @@ output "cloudtrail_log_group" {
   value       = aws_cloudwatch_log_group.cloudtrail.name
 }
 
+output "waf_blocked_ip_set_name" {
+  description = "자동 차단 IP Set 이름 (us-east-1)"
+  value       = aws_wafv2_ip_set.blocked.name
+}
+
+output "waf_ip_block_lambda" {
+  description = "WAF 공격 IP 자동 차단 Lambda"
+  value       = aws_lambda_function.waf_ip_block.function_name
+}
+
 output "nat_gateway_ip" {
   description = "NAT Gateway 퍼블릭 IP"
   value       = aws_eip.nat.public_ip
