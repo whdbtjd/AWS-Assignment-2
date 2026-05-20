@@ -58,6 +58,11 @@ output "aurora_db_name" {
   value       = aws_rds_cluster.aurora.database_name
 }
 
+output "aurora_slowquery_log_group" {
+  description = "슬로우 쿼리 CloudWatch Logs 그룹 (Logs Insights에서 선택)"
+  value       = "/aws/rds/cluster/${aws_rds_cluster.aurora.cluster_identifier}/slowquery"
+}
+
 output "nat_gateway_ip" {
   description = "NAT Gateway 퍼블릭 IP"
   value       = aws_eip.nat.public_ip
