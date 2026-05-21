@@ -13,9 +13,6 @@ ec2 = boto3.client("ec2")
 OPEN_CIDRS = {"0.0.0.0/0", "::/0"}
 
 
-    return {"remediated": True, "securityGroupId": sg_id, "revoked": to_revoke}
-
-
 def _resolve_sg_id(event):
     if isinstance(event, str):
         try:
